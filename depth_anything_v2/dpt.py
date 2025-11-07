@@ -2,6 +2,7 @@ import cv2
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.nn.init as init
 from torchvision.transforms import Compose
 
 from .dinov2 import DINOv2
@@ -113,6 +114,45 @@ class DPTHead(nn.Module):
             nn.ReLU(True),
             nn.Identity(),
         )
+
+        self.initialize_weights()
+
+    def initialize_weights(self):
+        # Initialize projects conv layers
+        for conv in self.projects:
+            if isinstance(conv, nn.Conv2d):
+                init.kaiming_normal_(conv.weight, mode="fan_out", nonlinearity="relu")
+                if conv.bias is not None:
+                    init.zeros_(conv.bias)
+
+        # Initialize resize_layers (ConvTranspose2d and Conv2d)
+        for layer in self.resize_layers:
+            if isinstance(layer, (nn.Conv2d, nn.ConvTranspose2d)):
+                init.kaiming_normal_(layer.weight, mode="fan_out", nonlinearity="relu")
+                if layer.bias is not None:
+                    init.zeros_(layer.bias)
+
+        # Initialize scratch layers
+        def init_scratch_module(module):
+            for m in module.modules():
+                if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+                    init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
+                    if m.bias is not None:
+                        init.zeros_(m.bias)
+                elif isinstance(m, nn.BatchNorm2d):
+                    init.ones_(m.weight)
+                    init.zeros_(m.bias)
+
+        init_scratch_module(self.scratch)
+
+        # Initialize readout_projects if used
+        if self.use_clstoken:
+            for readout in self.readout_projects:
+                for m in readout.modules():
+                    if isinstance(m, nn.Linear):
+                        init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="linear")
+                        if m.bias is not None:
+                            init.zeros_(m.bias)
 
     def forward(self, out_features, patch_h=None, patch_w=None):
         out = []
