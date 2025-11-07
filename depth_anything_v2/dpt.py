@@ -136,7 +136,7 @@ class DPTHead(nn.Module):
                 if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
                     init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
                     if m.bias is not None:
-                        init.zeros_(m.bias)
+                        init.constant_(m.bias, 0.01)
                 elif isinstance(m, nn.BatchNorm2d):
                     init.ones_(m.weight)
                     init.zeros_(m.bias)
