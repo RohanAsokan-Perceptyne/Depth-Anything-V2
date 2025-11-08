@@ -207,9 +207,9 @@ class DPTHead(nn.Module):
                 f"layer_4_rn: {layer_4_rn.min()} {layer_4_rn.mean()} {layer_4_rn.max()} {layer_4_rn.shape} {layer_4_rn.dtype}"
             )
             print(f"path_1: {path_4.min()} {path_4.mean()} {path_4.max()} {path_4.shape} {path_4.dtype}")
-            print(f"path_1: {path_3.min()} {path_3.mean()} {path_3.max()} {path_3.shape} {path_3.dtype}")
-            print(f"path_1: {path_2.min()} {path_2.mean()} {path_2.max()} {path_2.shape} {path_2.dtype}")
-            print(f"path_1: {path_1.min()} {path_1.mean()} {path_1.max()} {path_1.shape} {path_1.dtype}")
+            print(f"path_2: {path_3.min()} {path_3.mean()} {path_3.max()} {path_3.shape} {path_3.dtype}")
+            print(f"path_3: {path_2.min()} {path_2.mean()} {path_2.max()} {path_2.shape} {path_2.dtype}")
+            print(f"path_4: {path_1.min()} {path_1.mean()} {path_1.max()} {path_1.shape} {path_1.dtype}")
 
         out = self.scratch.output_conv1(path_1)
         if debug:
