@@ -39,6 +39,7 @@ class ResidualConvUnit(nn.Module):
         super().__init__()
 
         self.bn = bn
+        self.ln = ln
 
         self.groups=1
 
@@ -72,6 +73,7 @@ class ResidualConvUnit(nn.Module):
         if self.bn == True:
             out = self.bn1(out)
         elif self.ln == True:
+            print("Using LN now")
             out = self.ln1(out)
 
         out = self.activation(out)
