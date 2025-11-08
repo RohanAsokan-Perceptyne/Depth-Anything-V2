@@ -26,13 +26,13 @@ def _make_fusion_block(features, use_bn, use_ln, size=None):
 class ConvBlock(nn.Module):
     def __init__(self, in_feature, out_feature):
         super().__init__()
-        
+
         self.conv_block = nn.Sequential(
             nn.Conv2d(in_feature, out_feature, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(out_feature),
-            nn.ReLU(True)
+            nn.ReLU(),
         )
-    
+
     def forward(self, x):
         return self.conv_block(x)
 
@@ -112,7 +112,7 @@ class DPTHead(nn.Module):
         self.scratch.output_conv1 = nn.Conv2d(head_features_1, head_features_1 // 2, kernel_size=3, stride=1, padding=1)
         self.scratch.output_conv2 = nn.Sequential(
             nn.Conv2d(head_features_1 // 2, head_features_2, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(True),
+            nn.ReLU(),
             nn.Conv2d(head_features_2, 1, kernel_size=1, stride=1, padding=0),
         )
 
