@@ -109,13 +109,9 @@ class DPTHead(nn.Module):
         self.scratch.output_conv1 = nn.Conv2d(head_features_1, head_features_1 // 2, kernel_size=3, stride=1, padding=1)
         self.scratch.output_conv2 = nn.Sequential(
             nn.Conv2d(head_features_1 // 2, head_features_2, kernel_size=3, stride=1, padding=1),
-            nn.LayerNorm(head_features_2),
             nn.ReLU(True),
             nn.Conv2d(head_features_2, 1, kernel_size=1, stride=1, padding=0),
-            nn.Sigmoid(),
         )
-
-        self.scratch.output_ln1 = nn.LayerNorm(head_features_1 // 2)
 
         self.initialize_weights()
 
@@ -156,7 +152,7 @@ class DPTHead(nn.Module):
                         if m.bias is not None:
                             init.zeros_(m.bias)
 
-    def forward(self, out_features, patch_h=None, patch_w=None):
+    def forward(self, out_features, patch_h=None, patch_w=None, debug=True):
         out = []
         for i, x in enumerate(out_features):
             if self.use_clstoken:
@@ -166,12 +162,22 @@ class DPTHead(nn.Module):
             else:
                 x = x[0]
 
+            if debug:
+                print(f"x inp: {x.min()} {x.mean()} {x.max()} {x.shape} {x.dtype}")
+
             B, C, patch_h, patch_w = x.shape
 
             # x = x.permute(0, 2, 1).reshape((x.shape[0], x.shape[-1], patch_h, patch_w))
 
             x = self.projects[i](x)
+
+            if debug:
+                print(f"x proj: {x.min()} {x.mean()} {x.max()} {x.shape} {x.dtype}")
+
             x = self.resize_layers[i](x)
+
+            if debug:
+                print(f"x resize: {x.min()} {x.mean()} {x.max()} {x.shape} {x.dtype}")
 
             out.append(x)
 
@@ -187,10 +193,33 @@ class DPTHead(nn.Module):
         path_2 = self.scratch.refinenet2(path_3, layer_2_rn, size=layer_1_rn.shape[2:])
         path_1 = self.scratch.refinenet1(path_2, layer_1_rn)
 
+        if debug:
+            print(
+                f"layer_1_rn: {layer_1_rn.min()} {layer_1_rn.mean()} {layer_1_rn.max()} {layer_1_rn.shape} {layer_1_rn.dtype}"
+            )
+            print(
+                f"path_1: {layer_2_rn.min()} {layer_2_rn.mean()} {layer_2_rn.max()} {layer_2_rn.shape} {layer_2_rn.dtype}"
+            )
+            print(
+                f"path_1: {layer_3_rn.min()} {layer_3_rn.mean()} {layer_3_rn.max()} {layer_3_rn.shape} {layer_3_rn.dtype}"
+            )
+            print(
+                f"path_1: {layer_4_rn.min()} {layer_4_rn.mean()} {layer_4_rn.max()} {layer_4_rn.shape} {layer_4_rn.dtype}"
+            )
+            print(f"path_1: {path_4.min()} {path_4.mean()} {path_4.max()} {path_4.shape} {path_4.dtype}")
+            print(f"path_1: {path_3.min()} {path_3.mean()} {path_3.max()} {path_3.shape} {path_3.dtype}")
+            print(f"path_1: {path_2.min()} {path_2.mean()} {path_2.max()} {path_2.shape} {path_2.dtype}")
+            print(f"path_1: {path_1.min()} {path_1.mean()} {path_1.max()} {path_1.shape} {path_1.dtype}")
+
         out = self.scratch.output_conv1(path_1)
-        out = self.scratch.output_ln1(out)
+        if debug:
+            print(f"Conv 1: {out.min()} {out.mean()} {out.max()} {out.shape} {out.dtype}")
         out = F.interpolate(out, (int(patch_h * 16), int(patch_w * 16)), mode="bilinear", align_corners=True)
+        if debug:
+            print(f"Upsample: {out.min()} {out.mean()} {out.max()} {out.shape} {out.dtype}")
         out = self.scratch.output_conv2(out)
+        if debug:
+            print(f"Conv2: {out.min()} {out.mean()} {out.max()} {out.shape} {out.dtype}")
 
         return out
 
