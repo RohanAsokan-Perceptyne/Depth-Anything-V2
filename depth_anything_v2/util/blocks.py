@@ -17,11 +17,27 @@ def _make_scratch(in_shape, out_shape, groups=1, expand=False):
         if len(in_shape) >= 4:
             out_shape4 = out_shape * 8
 
-    scratch.layer1_rn = nn.Conv2d(in_shape[0], out_shape1, kernel_size=3, stride=1, padding=1, bias=False, groups=groups)
-    scratch.layer2_rn = nn.Conv2d(in_shape[1], out_shape2, kernel_size=3, stride=1, padding=1, bias=False, groups=groups)
-    scratch.layer3_rn = nn.Conv2d(in_shape[2], out_shape3, kernel_size=3, stride=1, padding=1, bias=False, groups=groups)
+    scratch.layer1_rn = nn.Sequential(
+        nn.Conv2d(in_shape[0], out_shape1, kernel_size=3, stride=1, padding=1, bias=False, groups=groups),
+        nn.InstanceNorm2d(out_shape1),
+        nn.ReLU(True),
+    )
+    scratch.layer2_rn = nn.Sequential(
+        nn.Conv2d(in_shape[1], out_shape2, kernel_size=3, stride=1, padding=1, bias=False, groups=groups),
+        nn.InstanceNorm2d(out_shape2),
+        nn.ReLU(True),
+    )
+    scratch.layer3_rn = nn.Sequential(
+        nn.Conv2d(in_shape[2], out_shape3, kernel_size=3, stride=1, padding=1, bias=False, groups=groups),
+        nn.InstanceNorm2d(out_shape3),
+        nn.ReLU(True),
+    )
     if len(in_shape) >= 4:
-        scratch.layer4_rn = nn.Conv2d(in_shape[3], out_shape4, kernel_size=3, stride=1, padding=1, bias=False, groups=groups)
+        scratch.layer4_rn = nn.Sequential(
+            nn.Conv2d(in_shape[3], out_shape4, kernel_size=3, stride=1, padding=1, bias=False, groups=groups),
+            nn.InstanceNorm2d(out_shape4),
+            nn.ReLU(),
+        )
 
     return scratch
 
