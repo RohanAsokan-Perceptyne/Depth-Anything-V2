@@ -10,12 +10,13 @@ from .util.blocks import FeatureFusionBlock, _make_scratch
 from .util.transform import NormalizeImage, PrepareForNet, Resize
 
 
-def _make_fusion_block(features, use_bn, size=None):
+def _make_fusion_block(features, use_bn, use_ln, size=None):
     return FeatureFusionBlock(
         features,
         nn.ReLU(False),
         deconv=False,
         bn=use_bn,
+        ln=use_ln,
         expand=False,
         align_corners=True,
         size=size,
@@ -37,13 +38,15 @@ class ConvBlock(nn.Module):
 
 
 class DPTHead(nn.Module):
+
     def __init__(
-        self, 
-        in_channels, 
-        features=256, 
-        use_bn=False, 
-        out_channels=[256, 512, 1024, 1024], 
-        use_clstoken=False
+        self,
+        in_channels,
+        features=256,
+        use_bn=False,
+        use_ln=True,
+        out_channels=[256, 512, 1024, 1024],
+        use_clstoken=False,
     ):
         super(DPTHead, self).__init__()
 
@@ -98,10 +101,10 @@ class DPTHead(nn.Module):
 
         self.scratch.stem_transpose = None
 
-        self.scratch.refinenet1 = _make_fusion_block(features, use_bn)
-        self.scratch.refinenet2 = _make_fusion_block(features, use_bn)
-        self.scratch.refinenet3 = _make_fusion_block(features, use_bn)
-        self.scratch.refinenet4 = _make_fusion_block(features, use_bn)
+        self.scratch.refinenet1 = _make_fusion_block(features, use_bn, use_ln)
+        self.scratch.refinenet2 = _make_fusion_block(features, use_bn, use_ln)
+        self.scratch.refinenet3 = _make_fusion_block(features, use_bn, use_ln)
+        self.scratch.refinenet4 = _make_fusion_block(features, use_bn, use_ln)
 
         head_features_1 = features
         head_features_2 = 32
