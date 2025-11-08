@@ -198,13 +198,13 @@ class DPTHead(nn.Module):
                 f"layer_1_rn: {layer_1_rn.min()} {layer_1_rn.mean()} {layer_1_rn.max()} {layer_1_rn.shape} {layer_1_rn.dtype}"
             )
             print(
-                f"path_1: {layer_2_rn.min()} {layer_2_rn.mean()} {layer_2_rn.max()} {layer_2_rn.shape} {layer_2_rn.dtype}"
+                f"layer_2_rn: {layer_2_rn.min()} {layer_2_rn.mean()} {layer_2_rn.max()} {layer_2_rn.shape} {layer_2_rn.dtype}"
             )
             print(
-                f"path_1: {layer_3_rn.min()} {layer_3_rn.mean()} {layer_3_rn.max()} {layer_3_rn.shape} {layer_3_rn.dtype}"
+                f"layer_3_rn: {layer_3_rn.min()} {layer_3_rn.mean()} {layer_3_rn.max()} {layer_3_rn.shape} {layer_3_rn.dtype}"
             )
             print(
-                f"path_1: {layer_4_rn.min()} {layer_4_rn.mean()} {layer_4_rn.max()} {layer_4_rn.shape} {layer_4_rn.dtype}"
+                f"layer_4_rn: {layer_4_rn.min()} {layer_4_rn.mean()} {layer_4_rn.max()} {layer_4_rn.shape} {layer_4_rn.dtype}"
             )
             print(f"path_1: {path_4.min()} {path_4.mean()} {path_4.max()} {path_4.shape} {path_4.dtype}")
             print(f"path_1: {path_3.min()} {path_3.mean()} {path_3.max()} {path_3.shape} {path_3.dtype}")
