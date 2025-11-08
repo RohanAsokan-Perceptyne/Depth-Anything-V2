@@ -109,9 +109,14 @@ class DPTHead(nn.Module):
         head_features_1 = features
         head_features_2 = 32
 
-        self.scratch.output_conv1 = nn.Conv2d(head_features_1, head_features_1 // 2, kernel_size=3, stride=1, padding=1)
+        self.scratch.output_conv1 = nn.Sequential(
+            nn.Conv2d(head_features_1, head_features_1 // 2, kernel_size=3, stride=1, padding=1),
+            nn.InstanceNorm2d(head_features_1 // 2),
+            nn.Identity(),
+        )
         self.scratch.output_conv2 = nn.Sequential(
             nn.Conv2d(head_features_1 // 2, head_features_2, kernel_size=3, stride=1, padding=1),
+            nn.InstanceNorm2d(head_features_2),
             nn.ReLU(),
             nn.Conv2d(head_features_2, 1, kernel_size=1, stride=1, padding=0),
         )

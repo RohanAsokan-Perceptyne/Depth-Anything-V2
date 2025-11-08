@@ -128,7 +128,11 @@ class FeatureFusionBlock(nn.Module):
         if self.expand == True:
             out_features = features // 2
 
-        self.out_conv = nn.Conv2d(features, out_features, kernel_size=1, stride=1, padding=0, bias=True, groups=1)
+        self.out_conv = nn.Sequential(
+            nn.Conv2d(features, out_features, kernel_size=1, stride=1, padding=0, bias=True, groups=1),
+            nn.InstanceNorm2d(out_features),
+            nn.Identity(),
+        )
 
         self.resConfUnit1 = ResidualConvUnit(features, activation, bn, ln)
         self.resConfUnit2 = ResidualConvUnit(features, activation, bn, ln)
