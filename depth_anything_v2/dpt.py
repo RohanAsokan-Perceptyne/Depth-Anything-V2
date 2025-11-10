@@ -172,7 +172,7 @@ class DPTHead(nn.Module):
                 x = x[0]
 
             if debug:
-                print(f"x inp: {x.min.item()} {x.mean.item()} {x.max.item()} {x.shape} {x.dtype}")
+                print(f"x inp: {x.min().item()} {x.mean().item()} {x.max().item()} {x.shape} {x.dtype}")
 
             B, C, patch_h, patch_w = x.shape
 
@@ -181,12 +181,12 @@ class DPTHead(nn.Module):
             x = self.projects[i](x)
 
             if debug:
-                print(f"x proj: {x.min.item()} {x.mean.item()} {x.max.item()} {x.shape} {x.dtype}")
+                print(f"x proj: {x.min().item()} {x.mean().item()} {x.max().item()} {x.shape} {x.dtype}")
 
             x = self.resize_layers[i](x)
 
             if debug:
-                print(f"x resize: {x.min.item()} {x.mean.item()} {x.max.item()} {x.shape} {x.dtype}")
+                print(f"x resize: {x.min().item()} {x.mean().item()} {x.max().item()} {x.shape} {x.dtype}")
 
             out.append(x)
 
@@ -204,31 +204,39 @@ class DPTHead(nn.Module):
 
         if debug:
             print(
-                f"layer_1_rn: {layer_1_rn.min.item()} {layer_1_rn.mean.item()} {layer_1_rn.max.item()} {layer_1_rn.shape} {layer_1_rn.dtype}"
+                f"layer_1_rn: {layer_1_rn.min().item()} {layer_1_rn.mean().item()} {layer_1_rn.max().item()} {layer_1_rn.shape} {layer_1_rn.dtype}"
             )
             print(
-                f"layer_2_rn: {layer_2_rn.min.item()} {layer_2_rn.mean.item()} {layer_2_rn.max.item()} {layer_2_rn.shape} {layer_2_rn.dtype}"
+                f"layer_2_rn: {layer_2_rn.min().item()} {layer_2_rn.mean().item()} {layer_2_rn.max().item()} {layer_2_rn.shape} {layer_2_rn.dtype}"
             )
             print(
-                f"layer_3_rn: {layer_3_rn.min.item()} {layer_3_rn.mean.item()} {layer_3_rn.max.item()} {layer_3_rn.shape} {layer_3_rn.dtype}"
+                f"layer_3_rn: {layer_3_rn.min().item()} {layer_3_rn.mean().item()} {layer_3_rn.max().item()} {layer_3_rn.shape} {layer_3_rn.dtype}"
             )
             print(
-                f"layer_4_rn: {layer_4_rn.min.item()} {layer_4_rn.mean.item()} {layer_4_rn.max.item()} {layer_4_rn.shape} {layer_4_rn.dtype}"
+                f"layer_4_rn: {layer_4_rn.min().item()} {layer_4_rn.mean().item()} {layer_4_rn.max().item()} {layer_4_rn.shape} {layer_4_rn.dtype}"
             )
-            print(f"path_1: {path_4.min.item()} {path_4.mean.item()} {path_4.max.item()} {path_4.shape} {path_4.dtype}")
-            print(f"path_2: {path_3.min.item()} {path_3.mean.item()} {path_3.max.item()} {path_3.shape} {path_3.dtype}")
-            print(f"path_3: {path_2.min.item()} {path_2.mean.item()} {path_2.max.item()} {path_2.shape} {path_2.dtype}")
-            print(f"path_4: {path_1.min.item()} {path_1.mean.item()} {path_1.max.item()} {path_1.shape} {path_1.dtype}")
+            print(
+                f"path_1: {path_4.min().item()} {path_4.mean().item()} {path_4.max().item()} {path_4.shape} {path_4.dtype}"
+            )
+            print(
+                f"path_2: {path_3.min().item()} {path_3.mean().item()} {path_3.max().item()} {path_3.shape} {path_3.dtype}"
+            )
+            print(
+                f"path_3: {path_2.min().item()} {path_2.mean().item()} {path_2.max().item()} {path_2.shape} {path_2.dtype}"
+            )
+            print(
+                f"path_4: {path_1.min().item()} {path_1.mean().item()} {path_1.max().item()} {path_1.shape} {path_1.dtype}"
+            )
 
         out = self.scratch.output_conv1(path_1)
         if debug:
-            print(f"Conv 1: {out.min.item()} {out.mean.item()} {out.max.item()} {out.shape} {out.dtype}")
+            print(f"Conv 1: {out.min().item()} {out.mean().item()} {out.max().item()} {out.shape} {out.dtype}")
         out = F.interpolate(out, (int(patch_h * 16), int(patch_w * 16)), mode="bilinear", align_corners=True)
         if debug:
-            print(f"Upsample: {out.min.item()} {out.mean.item()} {out.max.item()} {out.shape} {out.dtype}")
+            print(f"Upsample: {out.min().item()} {out.mean().item()} {out.max().item()} {out.shape} {out.dtype}")
         out = self.scratch.output_conv2(out)
         if debug:
-            print(f"Conv2: {out.min.item()} {out.mean.item()} {out.max.item()} {out.shape} {out.dtype}")
+            print(f"Conv2: {out.min().item()} {out.mean().item()} {out.max().item()} {out.shape} {out.dtype}")
 
         return out
 
