@@ -119,7 +119,6 @@ class DPTHead(nn.Module):
             nn.InstanceNorm2d(head_features_2) if use_ln else nn.Identity(),
             nn.ReLU(),
             nn.Conv2d(head_features_2, 1, kernel_size=1, stride=1, padding=0),
-            nn.ReLU(),
         )
 
         self.initialize_weights()
