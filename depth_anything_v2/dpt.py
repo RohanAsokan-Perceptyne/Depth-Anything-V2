@@ -160,7 +160,7 @@ class DPTHead(nn.Module):
                         if m.bias is not None:
                             init.zeros_(m.bias)
 
-    def forward(self, out_features, patch_h=None, patch_w=None, debug=True):
+    def forward(self, out_features, patch_h=None, patch_w=None, debug=False):
         out = []
         for i, x in enumerate(out_features):
             if self.use_clstoken:
@@ -233,11 +233,13 @@ class DPTHead(nn.Module):
         out = F.interpolate(out, (int(patch_h * 16), int(patch_w * 16)), mode="bilinear", align_corners=True)
         if debug:
             print(f"Upsample: {out.min().item()} {out.mean().item()} {out.max().item()} {out.shape} {out.dtype}")
-        out = self.scratch.output_conv2(out)
+        final_out = self.scratch.output_conv2(out)
         if debug:
-            print(f"Conv2: {out.min().item()} {out.mean().item()} {out.max().item()} {out.shape} {out.dtype}")
+            print(
+                f"Conv2: {final_out.min().item()} {final_out.mean().item()} {final_out.max().item()} {final_out.shape} {final_out.dtype}"
+            )
 
-        return out
+        return final_out, out
 
 
 class DepthAnythingV2(nn.Module):
